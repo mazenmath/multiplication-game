@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مغامرة جدول الضرب الفضائية | Multiplication Space Adventure</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --space-purple: #6B2FD8;
+            --space-pink: #FF1E9D;
+            --space-blue: #00C2FF;
+            --space-yellow: #FFD93D;
+            --space-green: #00FF88;
+            --space-orange: #FF6B35;
+            --dark-space: #0A0E27;
+            --star-gold: #FFC107;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(180deg, #0A0E27 0%, #1B1347 50%, #2D1B69 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            color: white;
+        }
+
+        /* Stars Animation Background */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        @keyframes rocket-fly {
+            0% { transform: translateX(-100px) translateY(0); }
+            100% { transform: translateX(calc(100vw + 100px)) translateY(-50px); }
+        }
+
+        /* Container */
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Login Screen */
+        .login-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-screen.hidden {
+            display: none;
+        }
+
+        .login-box {
+            background: rgba(10, 14, 39, 0.95);
+            border: 3px solid var(--space-blue);
+            border-radius: 30px;
+            padding: 50px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 194, 255, 0.4);
+            animation: slideDown 0.8s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .login-title {
+            font-family: 'Fredoka', cursive;
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--space-yellow), var(--space-pink), var(--space-blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .login-subtitle {
+            color: var(--space-blue);
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--space-yellow);
+            font-weight: 700;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid var(--space-blue);
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1.1rem;
+            font-family: 'Tajawal', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--space-yellow);
+            box-shadow: 0 0 20px rgba(255, 217, 61, 0.3);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--space-pink), var(--space-purple));
+            border: none;
+            border-radius: 15px;
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 900;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Tajawal', sans-serif;
+            margin-top: 10px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 30, 157, 0.5);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--space-blue);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 194, 255, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 194, 255, 0.3);
+        }
+
+        .toggle-auth {
+            margin-top: 20px;
+            color: var(--space-blue);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .toggle-auth:hover {
+            color: var(--space-yellow);
+        }
+
+        .error-message {
+            background: rgba(255, 30, 157, 0.2);
+            border: 2px solid var(--space-pink);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: var(--space-pink);
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* Header with Logout */
+        .header {
+            text-align: center;
+            padding: 30px 20px;
+            animation: slideDown 0.8s ease-out;
+            position: relative;
+        }
+
+        .user-info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(10, 14, 39, 0.9);
+            border: 2px solid var(--space-blue);
+            border-radius: 15px;
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-email {
+            color: var(--space-yellow);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .btn-logout {
+            background: var(--space-pink);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        .btn-logout:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 30, 157, 0.5);
+        }
+
+        .title {
+            font-family: 'Fredoka', cursive;
+            font-size: clamp(2rem, 6vw, 4.5rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--space-yellow), var(--space-pink), var(--space-blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(255, 217, 61, 0.3);
+            margin-bottom: 10px;
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { filter: drop-shadow(0 0 20px rgba(255, 217, 61, 0.4)); }
+            50% { filter: drop-shadow(0 0 40px rgba(255, 217, 61, 0.8)); }
+        }
+
+        .subtitle {
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            color: var(--space-blue);
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        /* Score Board */
+        .scoreboard {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .score-item {
+            background: rgba(10, 14, 39, 1);
+            border: 3px solid var(--space-blue);
+            border-radius: 20px;
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            animation: float 3s ease-in-out infinite;
+            box-shadow: 0 8px 32px rgba(0, 194, 255, 0.3);
+        }
+
+        .score-item.total-stars {
+            border-color: var(--star-gold);
+            box-shadow: 0 8px 32px rgba(255, 193, 7, 0.3);
+        }
+
+        .score-item.level {
+            border-color: var(--space-pink);
+            box-shadow: 0 8px 32px rgba(255, 30, 157, 0.3);
+        }
+
+        /* Leaderboard Button */
+        .leaderboard-btn {
+            background: linear-gradient(135deg, var(--space-green), var(--space-blue));
+            border: none;
+            color: white;
+            padding: 15px 40px;
+            font-size: 1.3rem;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: 900;
+            margin: 20px auto;
+            display: block;
+            transition: all 0.3s;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        .leaderboard-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.5);
+        }
+
+        /* Leaderboard Modal */
+        .leaderboard-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .leaderboard-modal.active {
+            display: flex;
+        }
+
+        .leaderboard-content {
+            background: linear-gradient(135deg, rgba(10, 14, 39, 0.98), rgba(27, 19, 71, 0.98));
+            border: 3px solid var(--space-yellow);
+            border-radius: 30px;
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(255, 217, 61, 0.4);
+        }
+
+        .leaderboard-title {
+            font-family: 'Fredoka', cursive;
+            font-size: 2.5rem;
+            text-align: center;
+            color: var(--space-yellow);
+            margin-bottom: 30px;
+        }
+
+        .leaderboard-list {
+            list-style: none;
+        }
+
+        .leaderboard-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--space-blue);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .leaderboard-item:hover {
+            transform: translateX(-5px);
+            border-color: var(--space-yellow);
+            box-shadow: 0 5px 20px rgba(255, 217, 61, 0.3);
+        }
+
+        .leaderboard-item.top-1 {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.2), rgba(255, 152, 0, 0.2));
+            border-color: var(--star-gold);
+        }
+
+        .leaderboard-item.top-2 {
+            background: linear-gradient(135deg, rgba(192, 192, 192, 0.2), rgba(158, 158, 158, 0.2));
+            border-color: #C0C0C0;
+        }
+
+        .leaderboard-item.top-3 {
+            background: linear-gradient(135deg, rgba(205, 127, 50, 0.2), rgba(184, 115, 51, 0.2));
+            border-color: #CD7F32;
+        }
+
+        .leaderboard-rank {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--space-yellow);
+            min-width: 50px;
+        }
+
+        .leaderboard-user {
+            flex: 1;
+            margin: 0 20px;
+        }
+
+        .leaderboard-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .leaderboard-email {
+            font-size: 0.9rem;
+            color: var(--space-blue);
+        }
+
+        .leaderboard-score {
+            text-align: left;
+        }
+
+        .leaderboard-stars {
+            font-size: 1.8rem;
+            color: var(--star-gold);
+            font-weight: 900;
+        }
+
+        .leaderboard-level {
+            font-size: 1rem;
+            color: var(--space-pink);
+        }
+
+        .close-leaderboard {
+            background: var(--space-pink);
+            border: none;
+            color: white;
+            padding: 15px 40px;
+            font-size: 1.3rem;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: 900;
+            margin: 30px auto 0;
+            display: block;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        /* Planet Selection */
+        .planet-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+            padding: 20px;
+        }
+
+        .planet-card {
+            background: linear-gradient(135deg, rgba(107, 47, 216, 1), rgba(255, 30, 157, 1));
+            border: 4px solid transparent;
+            border-radius: 25px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .planet-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .planet-card:hover::before {
+            opacity: 1;
+        }
+
+        .planet-card:hover {
+            transform: translateY(-15px) scale(1.05);
+            border-color: var(--space-yellow);
+            box-shadow: 0 20px 60px rgba(255, 217, 61, 0.4);
+        }
+
+        .planet-card.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .planet-card.locked:hover {
+            transform: none;
+        }
+
+        .planet-emoji {
+            font-size: 5rem;
+            margin-bottom: 15px;
+            display: block;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .planet-name {
+            font-family: 'Fredoka', cursive;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--space-yellow);
+        }
+
+        .planet-name-en {
+            font-size: 1rem;
+            color: var(--space-blue);
+            margin-bottom: 15px;
+        }
+
+        .planet-stars {
+            font-size: 1.5rem;
+            color: var(--star-gold);
+        }
+
+        /* Game Screen */
+        .game-screen {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .game-screen.active {
+            display: block;
+        }
+
+        .game-header {
+            background: linear-gradient(135deg, rgba(107, 47, 216, 1), rgba(255, 30, 157, 1));
+            border-radius: 25px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(255, 30, 157, 0.4);
+        }
+
+        .game-planet-name {
+            font-family: 'Fredoka', cursive;
+            font-size: 2.5rem;
+            color: var(--space-yellow);
+            margin-bottom: 10px;
+        }
+
+        .game-planet-name-en {
+            font-size: 1.2rem;
+            color: var(--space-blue);
+        }
+
+        .game-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            background: rgba(10, 14, 39, 0.8);
+            border: 2px solid var(--space-blue);
+            border-radius: 15px;
+            padding: 15px 25px;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .progress-container {
+            background: rgba(10, 14, 39, 0.8);
+            border-radius: 20px;
+            padding: 10px;
+            margin: 20px 0;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, var(--space-green), var(--space-blue));
+            height: 20px;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        .question-container {
+            background: linear-gradient(135deg, rgba(107, 47, 216, 0.3), rgba(255, 30, 157, 0.3));
+            border: 4px solid var(--space-yellow);
+            border-radius: 25px;
+            padding: 50px;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .question {
+            font-family: 'Fredoka', cursive;
+            font-size: clamp(3rem, 8vw, 6rem);
+            color: white;
+            margin-bottom: 40px;
+            text-shadow: 0 0 20px rgba(255, 217, 61, 0.5);
+        }
+
+        .answers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .answer-btn {
+            background: linear-gradient(135deg, var(--space-purple), var(--space-pink));
+            border: 3px solid var(--space-blue);
+            color: white;
+            padding: 30px;
+            font-size: 2.5rem;
+            font-weight: 900;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        .answer-btn:hover {
+            transform: scale(1.1);
+            border-color: var(--space-yellow);
+            box-shadow: 0 10px 40px rgba(255, 217, 61, 0.5);
+        }
+
+        .answer-btn.correct {
+            background: linear-gradient(135deg, var(--space-green), #00AA5E);
+            animation: pulse 0.5s;
+        }
+
+        .answer-btn.wrong {
+            background: linear-gradient(135deg, #FF3333, #CC0000);
+            animation: shake 0.5s;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        /* Learning Screen */
+        .learning-screen {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .learning-screen.active {
+            display: block;
+        }
+
+        .learning-header {
+            background: linear-gradient(135deg, rgba(107, 47, 216, 1), rgba(255, 30, 157, 1));
+            border-radius: 25px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .learning-title {
+            font-family: 'Fredoka', cursive;
+            font-size: 2.5rem;
+            color: var(--space-yellow);
+            margin-bottom: 10px;
+        }
+
+        .learning-title-en {
+            font-size: 1.2rem;
+            color: var(--space-blue);
+        }
+
+        .multiplication-table {
+            background: rgba(10, 14, 39, 0.9);
+            border: 3px solid var(--space-blue);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+
+        .table-title {
+            font-size: 2rem;
+            color: var(--space-yellow);
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 900;
+        }
+
+        .table-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            margin: 10px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .table-row:hover {
+            background: rgba(255, 217, 61, 0.2);
+            transform: translateX(-5px);
+        }
+
+        .equation {
+            font-weight: 700;
+            color: white;
+        }
+
+        .result {
+            font-weight: 900;
+            color: var(--space-green);
+            font-size: 1.8rem;
+        }
+
+        .tricks-section {
+            background: rgba(255, 30, 157, 0.1);
+            border: 3px solid var(--space-pink);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+
+        .tricks-title {
+            font-size: 1.8rem;
+            color: var(--space-pink);
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 900;
+        }
+
+        .trick-item {
+            background: rgba(10, 14, 39, 0.6);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+            border-right: 5px solid var(--space-yellow);
+        }
+
+        .trick-text {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: white;
+        }
+
+        .btn-start-quiz {
+            background: linear-gradient(135deg, var(--space-green), var(--space-blue));
+            border: none;
+            color: white;
+            padding: 20px 50px;
+            font-size: 1.5rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 900;
+            display: block;
+            margin: 30px auto;
+            transition: all 0.3s;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        .btn-start-quiz:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 255, 136, 0.5);
+        }
+
+        .btn-back {
+            background: transparent;
+            border: 2px solid var(--space-blue);
+            color: var(--space-blue);
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: 700;
+            display: inline-block;
+            margin: 10px;
+            transition: all 0.3s;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        .btn-back:hover {
+            background: rgba(0, 194, 255, 0.2);
+            transform: translateY(-3px);
+        }
+
+        /* Celebration Modal */
+        .celebration-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .celebration-modal.active {
+            display: flex;
+        }
+
+        .celebration-content {
+            background: linear-gradient(135deg, rgba(107, 47, 216, 0.95), rgba(255, 30, 157, 0.95));
+            border: 5px solid var(--space-yellow);
+            border-radius: 30px;
+            padding: 60px;
+            text-align: center;
+            max-width: 600px;
+            animation: bounce 1s;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-30px); }
+            60% { transform: translateY(-15px); }
+        }
+
+        .celebration-emoji {
+            font-size: 8rem;
+            margin-bottom: 20px;
+        }
+
+        .celebration-message {
+            font-size: 1.8rem;
+            line-height: 1.6;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .btn-continue {
+            background: var(--space-yellow);
+            border: none;
+            color: var(--dark-space);
+            padding: 20px 50px;
+            font-size: 1.5rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 900;
+            transition: all 0.3s;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        .btn-continue:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 30px rgba(255, 217, 61, 0.6);
+        }
+
+        /* Particles */
+        .particle {
+            position: fixed;
+            font-size: 2rem;
+            pointer-events: none;
+            z-index: 9999;
+            animation: particleFloat 3s ease-out forwards;
+        }
+
+        @keyframes particleFloat {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-200px) rotate(360deg); opacity: 0; }
+        }
+
+        /* Rocket Animation */
+        .rocket {
+            position: fixed;
+            font-size: 4rem;
+            bottom: -100px;
+            right: -100px;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        .rocket.flying {
+            animation: rocket-fly 3s linear;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .login-box {
+                padding: 30px;
+            }
+
+            .user-info {
+                position: static;
+                margin-bottom: 20px;
+                flex-direction: column;
+            }
+
+            .leaderboard-content {
+                padding: 20px;
+            }
+
+            .leaderboard-item {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .leaderboard-rank {
+                margin-bottom: 10px;
+            }
+
+            .leaderboard-user {
+                margin: 10px 0;
+            }
+
+            .question {
+                font-size: 3rem;
+            }
+
+            .answer-btn {
+                padding: 20px;
+                font-size: 1.8rem;
+            }
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid var(--space-yellow);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Stars Background -->
+    <div class="stars" id="starsContainer"></div>
+
+    <!-- Login Screen -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-box">
+            <div class="login-title">🚀 مغامرة جدول الضرب</div>
+            <div class="login-subtitle">Multiplication Space Adventure</div>
+
+            <div class="error-message" id="errorMessage"></div>
+
+            <div id="loginForm">
+                <div class="input-group">
+                    <label class="input-label">البريد الإلكتروني | Email</label>
+                    <input type="email" class="input-field" id="loginEmail" placeholder="example@email.com" dir="ltr">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">كلمة المرور | Password</label>
+                    <input type="password" class="input-field" id="loginPassword" placeholder="••••••••" dir="ltr">
+                </div>
+                <button class="btn-primary" onclick="login()">تسجيل الدخول | Login</button>
+                <p class="toggle-auth" onclick="toggleAuthMode()">ليس لديك حساب؟ سجل الآن | Don't have an account? Sign up</p>
+            </div>
+
+            <div id="signupForm" style="display: none;">
+                <div class="input-group">
+                    <label class="input-label">الاسم | Name</label>
+                    <input type="text" class="input-field" id="signupName" placeholder="أدخل اسمك | Enter your name">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">البريد الإلكتروني | Email</label>
+                    <input type="email" class="input-field" id="signupEmail" placeholder="example@email.com" dir="ltr">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">كلمة المرور | Password</label>
+                    <input type="password" class="input-field" id="signupPassword" placeholder="••••••••" dir="ltr">
+                </div>
+                <button class="btn-primary" onclick="signup()">إنشاء حساب | Sign Up</button>
+                <p class="toggle-auth" onclick="toggleAuthMode()">لديك حساب بالفعل؟ سجل دخول | Already have an account? Login</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div class="container" id="mainApp" style="display: none;">
+        <!-- Header -->
+        <div class="header">
+            <div class="user-info">
+                <span class="user-email" id="userEmail"></span>
+                <button class="btn-logout" onclick="logout()">تسجيل الخروج | Logout</button>
+            </div>
+            <h1 class="title">🚀 مغامرة جدول الضرب الفضائية</h1>
+            <p class="subtitle">Multiplication Space Adventure</p>
+        </div>
+
+        <!-- Main Screen -->
+        <div id="mainScreen">
+            <!-- Score Board -->
+            <div class="scoreboard">
+                <div class="score-item total-stars">
+                    <span>⭐</span>
+                    <span>النجوم الكلية | Total Stars: <strong id="totalStars">0</strong></span>
+                </div>
+                <div class="score-item level">
+                    <span>🎯</span>
+                    <span>المستوى | Level: <strong id="currentLevel">1</strong></span>
+                </div>
+            </div>
+
+            <!-- Leaderboard Button -->
+            <button class="leaderboard-btn" onclick="showLeaderboard()">
+                🏆 لوحة المتصدرين | Leaderboard
+            </button>
+
+            <!-- Planet Selection -->
+            <div class="planet-selection" id="planetsContainer"></div>
+        </div>
+
+        <!-- Learning Screen -->
+        <div class="learning-screen" id="learningScreen">
+            <div class="learning-header">
+                <h2 class="learning-title" id="learningPlanetName"></h2>
+                <p class="learning-title-en" id="learningPlanetNameEn"></p>
+            </div>
+
+            <div class="multiplication-table" id="multiplicationTable"></div>
+
+            <div class="tricks-section" id="tricksSection"></div>
+
+            <button class="btn-start-quiz" onclick="startQuiz()">
+                🎮 ابدأ الاختبار | Start Quiz
+            </button>
+            <button class="btn-back" onclick="backToMenu()">
+                ← العودة للقائمة | Back to Menu
+            </button>
+        </div>
+
+        <!-- Game Screen -->
+        <div class="game-screen" id="gameScreen">
+            <div class="game-header">
+                <h2 class="game-planet-name" id="gamePlanetName"></h2>
+                <p class="game-planet-name-en" id="gamePlanetNameEn"></p>
+            </div>
+
+            <div class="game-stats">
+                <div class="stat-item">
+                    ⭐ النجوم | Stars: <strong id="gameStars">0</strong>
+                </div>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+
+            <div class="question-container">
+                <div class="question" id="question">2 × 3 = ?</div>
+                <div class="answers-grid" id="answersGrid"></div>
+            </div>
+
+            <button class="btn-back" onclick="backToMenu()">
+                ← العودة للقائمة | Back to Menu
+            </button>
+        </div>
+    </div>
+
+    <!-- Leaderboard Modal -->
+    <div class="leaderboard-modal" id="leaderboardModal">
+        <div class="leaderboard-content">
+            <h2 class="leaderboard-title">🏆 لوحة المتصدرين | Leaderboard</h2>
+            <div class="loading-spinner" id="leaderboardLoading"></div>
+            <ul class="leaderboard-list" id="leaderboardList"></ul>
+            <button class="close-leaderboard" onclick="closeLeaderboard()">إغلاق | Close</button>
+        </div>
+    </div>
+
+    <!-- Celebration Modal -->
+    <div class="celebration-modal" id="celebrationModal">
+        <div class="celebration-content">
+            <div class="celebration-emoji">🎉</div>
+            <div class="celebration-message" id="celebrationMessage"></div>
+            <button class="btn-continue" onclick="closeCelebration()">متابعة | Continue</button>
+        </div>
+    </div>
+
+    <script>
+        // ==================== FIREBASE CONFIGURATION ====================
+        // استبدل هذه القيم بقيم مشروعك من Firebase Console
+        // Replace these values with your Firebase project configuration
+        // const firebaseConfig = {
+        //     apiKey: "YOUR_API_KEY",
+        //     authDomain: "YOUR_AUTH_DOMAIN",
+        //     databaseURL: "YOUR_DATABASE_URL",
+        //     projectId: "YOUR_PROJECT_ID",
+        //     storageBucket: "YOUR_STORAGE_BUCKET",
+        //     messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+        //     appId: "YOUR_APP_ID"
+        // };
+        const firebaseConfig = {
+  apiKey: "AIzaSyDqMJOrcZDJQWgXHpTisaTBGserx_Ewp8Y",
+  authDomain: "multiplication-adventure-eee71.firebaseapp.com",
+  databaseURL: "https://multiplication-adventure-eee71-default-rtdb.firebaseio.com",
+  projectId: "multiplication-adventure-eee71",
+  storageBucket: "multiplication-adventure-eee71.firebasestorage.app",
+  messagingSenderId: "431295452406",
+  appId: "1:431295452406:web:eee4ec6aba9050d832c8d7"
+};
+
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+
+        // Current user data
+        let currentUser = null;
+
+        // ==================== AUTHENTICATION ====================
+        
+        // Check authentication state
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUser = user;
+                loadUserData();
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('mainApp').style.display = 'block';
+                document.getElementById('userEmail').textContent = user.email;
+            } else {
+                currentUser = null;
+                document.getElementById('loginScreen').classList.remove('hidden');
+                document.getElementById('mainApp').style.display = 'none';
+            }
+        });
+
+        // Toggle between login and signup
+        function toggleAuthMode() {
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            if (loginForm.style.display === 'none') {
+                loginForm.style.display = 'block';
+                signupForm.style.display = 'none';
+            } else {
+                loginForm.style.display = 'none';
+                signupForm.style.display = 'block';
+            }
+            
+            errorMessage.classList.remove('show');
+        }
+
+        // Show error message
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorMessage.classList.add('show');
+            
+            setTimeout(() => {
+                errorMessage.classList.remove('show');
+            }, 5000);
+        }
+
+        // Login function
+        async function login() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            if (!email || !password) {
+                showError('الرجاء إدخال البريد الإلكتروني وكلمة المرور | Please enter email and password');
+                return;
+            }
+
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+            } catch (error) {
+                let errorMsg = 'حدث خطأ في تسجيل الدخول | Login error';
+                
+                if (error.code === 'auth/user-not-found') {
+                    errorMsg = 'المستخدم غير موجود | User not found';
+                } else if (error.code === 'auth/wrong-password') {
+                    errorMsg = 'كلمة المرور خاطئة | Wrong password';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMsg = 'البريد الإلكتروني غير صالح | Invalid email';
+                }
+                
+                showError(errorMsg);
+            }
+        }
+
+        // Signup function
+        async function signup() {
+            const name = document.getElementById('signupName').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            const password = document.getElementById('signupPassword').value;
+
+            if (!name || !email || !password) {
+                showError('الرجاء إدخال جميع البيانات | Please fill all fields');
+                return;
+            }
+
+            if (password.length < 6) {
+                showError('كلمة المرور يجب أن تكون 6 أحرف على الأقل | Password must be at least 6 characters');
+                return;
+            }
+
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+
+                // Create user profile in database
+                await database.ref('users/' + user.uid).set({
+                    name: name,
+                    email: email,
+                    totalStars: 0,
+                    currentLevel: 1,
+                    unlockedPlanets: [2],
+                    createdAt: new Date().toISOString()
+                });
+
+            } catch (error) {
+                let errorMsg = 'حدث خطأ في إنشاء الحساب | Signup error';
+                
+                if (error.code === 'auth/email-already-in-use') {
+                    errorMsg = 'البريد الإلكتروني مستخدم بالفعل | Email already in use';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMsg = 'البريد الإلكتروني غير صالح | Invalid email';
+                } else if (error.code === 'auth/weak-password') {
+                    errorMsg = 'كلمة المرور ضعيفة | Weak password';
+                }
+                
+                showError(errorMsg);
+            }
+        }
+
+        // Logout function
+        async function logout() {
+            try {
+                await auth.signOut();
+                location.reload();
+            } catch (error) {
+                showError('حدث خطأ في تسجيل الخروج | Logout error');
+            }
+        }
+
+        // ==================== GAME DATA ====================
+
+        const planets = [
+            { number: 2, nameAr: 'كوكب الضعف', nameEn: 'Doubling Planet', emoji: '🌍', color: '#00C2FF' },
+            { number: 3, nameAr: 'كوكب الثلاثية', nameEn: 'Triple Planet', emoji: '🪐', color: '#6B2FD8' },
+            { number: 4, nameAr: 'كوكب الربع', nameEn: 'Quad Planet', emoji: '🌑', color: '#FF1E9D' },
+            { number: 5, nameAr: 'كوكب الخمسة', nameEn: 'Penta Planet', emoji: '🌕', color: '#FFD93D' },
+            { number: 6, nameAr: 'كوكب السداسي', nameEn: 'Hexa Planet', emoji: '🌙', color: '#00FF88' },
+            { number: 7, nameAr: 'كوكب السبعة', nameEn: 'Hepta Planet', emoji: '⭐', color: '#FF6B35' },
+            { number: 8, nameAr: 'كوكب الثماني', nameEn: 'Octa Planet', emoji: '☄️', color: '#9C27B0' },
+            { number: 9, nameAr: 'كوكب التسعة', nameEn: 'Nona Planet', emoji: '🌟', color: '#E91E63' },
+            { number: 10, nameAr: 'كوكب العشرة', nameEn: 'Deca Planet', emoji: '🌠', color: '#FFC107' }
+        ];
+
+        let gameState = {
+            totalStars: 0,
+            currentLevel: 1,
+            unlockedPlanets: [2],
+            currentPlanet: null,
+            questions: [],
+            currentQuestion: 0,
+            gameStars: 0
+        };
+
+        // ==================== DATABASE FUNCTIONS ====================
+
+        // Load user data from database
+        async function loadUserData() {
+            if (!currentUser) return;
+
+            try {
+                const snapshot = await database.ref('users/' + currentUser.uid).once('value');
+                const userData = snapshot.val();
+
+                if (userData) {
+                    gameState.totalStars = userData.totalStars || 0;
+                    gameState.currentLevel = userData.currentLevel || 1;
+                    gameState.unlockedPlanets = userData.unlockedPlanets || [2];
+                }
+
+                updateScoreboard();
+                renderPlanets();
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
+        }
+
+        // Save game state to database
+        async function saveGameState() {
+            if (!currentUser) return;
+
+            try {
+                await database.ref('users/' + currentUser.uid).update({
+                    totalStars: gameState.totalStars,
+                    currentLevel: gameState.currentLevel,
+                    unlockedPlanets: gameState.unlockedPlanets,
+                    lastUpdated: new Date().toISOString()
+                });
+            } catch (error) {
+                console.error('Error saving game state:', error);
+            }
+        }
+
+        // ==================== LEADERBOARD ====================
+
+        async function showLeaderboard() {
+            const modal = document.getElementById('leaderboardModal');
+            const list = document.getElementById('leaderboardList');
+            const loading = document.getElementById('leaderboardLoading');
+
+            modal.classList.add('active');
+            list.innerHTML = '';
+            loading.style.display = 'block';
+
+            try {
+                const snapshot = await database.ref('users')
+                    .orderByChild('totalStars')
+                    .limitToLast(100)
+                    .once('value');
+
+                const users = [];
+                snapshot.forEach((childSnapshot) => {
+                    const userData = childSnapshot.val();
+                    users.push({
+                        uid: childSnapshot.key,
+                        name: userData.name || 'مستخدم مجهول | Anonymous',
+                        email: userData.email,
+                        totalStars: userData.totalStars || 0,
+                        currentLevel: userData.currentLevel || 1
+                    });
+                });
+
+                // Sort by stars (descending)
+                users.sort((a, b) => b.totalStars - a.totalStars);
+
+                loading.style.display = 'none';
+
+                users.forEach((user, index) => {
+                    const rank = index + 1;
+                    const isCurrentUser = currentUser && user.uid === currentUser.uid;
+                    
+                    let topClass = '';
+                    if (rank === 1) topClass = 'top-1';
+                    else if (rank === 2) topClass = 'top-2';
+                    else if (rank === 3) topClass = 'top-3';
+
+                    const li = document.createElement('li');
+                    li.className = `leaderboard-item ${topClass}`;
+                    if (isCurrentUser) {
+                        li.style.borderColor = 'var(--space-green)';
+                        li.style.boxShadow = '0 0 20px rgba(0, 255, 136, 0.5)';
+                    }
+
+                    let rankEmoji = rank;
+                    if (rank === 1) rankEmoji = '🥇';
+                    else if (rank === 2) rankEmoji = '🥈';
+                    else if (rank === 3) rankEmoji = '🥉';
+
+                    li.innerHTML = `
+                        <div class="leaderboard-rank">${rankEmoji}</div>
+                        <div class="leaderboard-user">
+                            <div class="leaderboard-name">${user.name}${isCurrentUser ? ' (أنت | You)' : ''}</div>
+                            <div class="leaderboard-email">${user.email}</div>
+                        </div>
+                        <div class="leaderboard-score">
+                            <div class="leaderboard-stars">⭐ ${user.totalStars}</div>
+                            <div class="leaderboard-level">المستوى | Level ${user.currentLevel}</div>
+                        </div>
+                    `;
+
+                    list.appendChild(li);
+                });
+
+            } catch (error) {
+                console.error('Error loading leaderboard:', error);
+                loading.style.display = 'none';
+                list.innerHTML = '<p style="text-align: center; color: var(--space-pink);">حدث خطأ في تحميل لوحة المتصدرين | Error loading leaderboard</p>';
+            }
+        }
+
+        function closeLeaderboard() {
+            document.getElementById('leaderboardModal').classList.remove('active');
+        }
+
+        // ==================== GAME LOGIC ====================
+
+        function updateScoreboard() {
+            document.getElementById('totalStars').textContent = gameState.totalStars;
+            document.getElementById('currentLevel').textContent = gameState.currentLevel;
+        }
+
+        function renderPlanets() {
+            const container = document.getElementById('planetsContainer');
+            container.innerHTML = '';
+
+            planets.forEach(planet => {
+                const isUnlocked = gameState.unlockedPlanets.includes(planet.number);
+                
+                const card = document.createElement('div');
+                card.className = `planet-card ${isUnlocked ? '' : 'locked'}`;
+                
+                card.innerHTML = `
+                    <span class="planet-emoji">${planet.emoji}</span>
+                    <div class="planet-name">${planet.nameAr}</div>
+                    <div class="planet-name-en">${planet.nameEn}</div>
+                    <div class="planet-stars">${isUnlocked ? '✅ مفتوح | Unlocked' : '🔒 مقفل | Locked'}</div>
+                `;
+
+                if (isUnlocked) {
+                    card.onclick = () => selectPlanet(planet);
+                }
+
+                container.appendChild(card);
+            });
+        }
+
+        function selectPlanet(planet) {
+            gameState.currentPlanet = planet;
+            document.getElementById('mainScreen').style.display = 'none';
+            document.getElementById('learningScreen').classList.add('active');
+
+            showLearningContent(planet);
+        }
+
+        function showLearningContent(planet) {
+            document.getElementById('learningPlanetName').textContent = planet.nameAr;
+            document.getElementById('learningPlanetNameEn').textContent = planet.nameEn;
+
+            // Generate multiplication table
+            const tableContainer = document.getElementById('multiplicationTable');
+            tableContainer.innerHTML = `<div class="table-title">جدول الضرب ${planet.number} | Multiplication Table ${planet.number}</div>`;
+
+            for (let i = 1; i <= 10; i++) {
+                const row = document.createElement('div');
+                row.className = 'table-row';
+                row.innerHTML = `
+                    <span class="equation">${planet.number} × ${i}</span>
+                    <span class="result">= ${planet.number * i}</span>
+                `;
+                row.onclick = () => highlightRow(row);
+                tableContainer.appendChild(row);
+            }
+
+            // Show tricks
+            showTricks(planet.number);
+        }
+
+        function showTricks(tableNumber) {
+            const tricksSection = document.getElementById('tricksSection');
+            const tricks = {
+                2: ['الضرب في 2 = الجمع مع نفسه | Multiply by 2 = Add to itself', 'مثال: 5 × 2 = 5 + 5 = 10'],
+                3: ['العد بالقفز كل 3 أرقام | Skip count by 3', '3، 6، 9، 12، 15...'],
+                4: ['الضرب في 4 = الضرب في 2 مرتين | Multiply by 4 = Double twice', 'مثال: 7 × 4 = (7 × 2) × 2 = 14 × 2 = 28'],
+                5: ['كل الأجوبة تنتهي بـ 0 أو 5 | All answers end with 0 or 5'],
+                9: ['حاصل ضرب 9 في أي رقم = مجموع أرقامه 9 | Sum of digits = 9', 'مثال: 9 × 7 = 63 → 6 + 3 = 9'],
+                10: ['أضف صفر للرقم | Just add a zero!', 'مثال: 8 × 10 = 80']
+            };
+
+            const tricksList = tricks[tableNumber] || ['تمرن كثيراً وستتقنه! | Practice makes perfect!'];
+
+            tricksSection.innerHTML = `<div class="tricks-title">✨ نصائح وحيل | Tips & Tricks</div>`;
+            
+            tricksList.forEach(trick => {
+                const trickItem = document.createElement('div');
+                trickItem.className = 'trick-item';
+                trickItem.innerHTML = `<div class="trick-text">💡 ${trick}</div>`;
+                tricksSection.appendChild(trickItem);
+            });
+        }
+
+        function highlightRow(element) {
+            element.style.background = 'rgba(255, 217, 61, 0.3)';
+            setTimeout(() => {
+                element.style.background = 'rgba(255, 255, 255, 0.05)';
+            }, 1000);
+        }
+
+        function startQuiz() {
+            document.getElementById('learningScreen').classList.remove('active');
+            document.getElementById('gameScreen').classList.add('active');
+
+            const planet = gameState.currentPlanet;
+            document.getElementById('gamePlanetName').textContent = `${planet.nameAr} (×${planet.number})`;
+            document.getElementById('gamePlanetNameEn').textContent = `${planet.nameEn} (×${planet.number})`;
+
+            gameState.questions = generateQuestions(planet.number);
+            gameState.currentQuestion = 0;
+            gameState.gameStars = 0;
+
+            showQuestion();
+        }
+
+        function generateQuestions(tableNumber) {
+            const questions = [];
+            const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+            
+            // Shuffle numbers
+            for (let i = numbers.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
+            }
+
+            numbers.forEach(num => {
+                questions.push({
+                    multiplicand: tableNumber,
+                    multiplier: num,
+                    answer: tableNumber * num
+                });
+            });
+
+            return questions;
+        }
+
+        function showQuestion() {
+            if (gameState.currentQuestion >= gameState.questions.length) {
+                completePlanet();
+                return;
+            }
+
+            const q = gameState.questions[gameState.currentQuestion];
+            document.getElementById('question').textContent = `${q.multiplicand} × ${q.multiplier} = ?`;
+            document.getElementById('gameStars').textContent = gameState.gameStars;
+
+            const progress = ((gameState.currentQuestion + 1) / gameState.questions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+
+            generateAnswers(q);
+        }
+
+        function generateAnswers(question) {
+            const answersGrid = document.getElementById('answersGrid');
+            answersGrid.innerHTML = '';
+
+            const correctAnswer = question.answer;
+            const wrongAnswers = [];
+
+            // Generate 3 wrong answers
+            while (wrongAnswers.length < 3) {
+                const offset = Math.floor(Math.random() * 20) - 10;
+                const wrong = correctAnswer + offset;
+                if (wrong !== correctAnswer && wrong > 0 && !wrongAnswers.includes(wrong)) {
+                    wrongAnswers.push(wrong);
+                }
+            }
+
+            const allAnswers = [correctAnswer, ...wrongAnswers];
+            
+            // Shuffle answers
+            for (let i = allAnswers.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [allAnswers[i], allAnswers[j]] = [allAnswers[j], allAnswers[i]];
+            }
+
+            allAnswers.forEach(answer => {
+                const btn = document.createElement('button');
+                btn.className = 'answer-btn';
+                btn.textContent = answer;
+                btn.onclick = () => checkAnswer(answer, correctAnswer, btn);
+                answersGrid.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selected, correct, btn) {
+            const allBtns = document.querySelectorAll('.answer-btn');
+            allBtns.forEach(b => b.disabled = true);
+
+            if (selected === correct) {
+                btn.classList.add('correct');
+                gameState.gameStars++;
+                gameState.totalStars++;
+                createParticles('⭐', btn);
+                
+                setTimeout(() => {
+                    gameState.currentQuestion++;
+                    showQuestion();
+                }, 1000);
+            } else {
+                btn.classList.add('wrong');
+                
+                // Show correct answer
+                allBtns.forEach(b => {
+                    if (parseInt(b.textContent) === correct) {
+                        b.classList.add('correct');
+                    }
+                });
+
+                setTimeout(() => {
+                    gameState.currentQuestion++;
+                    showQuestion();
+                }, 1500);
+            }
+
+            updateScoreboard();
+            saveGameState();
+        }
+
+        function completePlanet() {
+            const planet = gameState.currentPlanet;
+            
+            // Unlock next planet
+            if (!gameState.unlockedPlanets.includes(planet.number + 1) && planet.number < planets.length) {
+                gameState.unlockedPlanets.push(planet.number + 1);
+            }
+
+            if (planet.number >= gameState.currentLevel) {
+                gameState.currentLevel = planet.number + 1;
+            }
+
+            saveGameState();
+
+            // Show celebration
+            const modal = document.getElementById('celebrationModal');
+            const message = document.getElementById('celebrationMessage');
+            
+            if (gameState.gameStars === 10) {
+                message.innerHTML = `
+                    🎉 مذهل! حصلت على 10 من 10 نجمات!<br>
+                    Amazing! You got 10 out of 10 stars!<br>
+                    <strong>أنت بطل الفضاء! | You're a space hero!</strong>
+                `;
+            } else if (gameState.gameStars >= 7) {
+                message.innerHTML = `
+                    👏 عمل رائع! حصلت على ${gameState.gameStars} من 10 نجمات!<br>
+                    Great job! You got ${gameState.gameStars} out of 10 stars!
+                `;
+            } else {
+                message.innerHTML = `
+                    💪 استمر في المحاولة! حصلت على ${gameState.gameStars} من 10 نجمات<br>
+                    Keep trying! You got ${gameState.gameStars} out of 10 stars<br>
+                    يمكنك إعادة المحاولة! | You can try again!
+                `;
+            }
+
+            modal.classList.add('active');
+            triggerRocket();
+        }
+
+        function closeCelebration() {
+            document.getElementById('celebrationModal').classList.remove('active');
+            backToMenu();
+        }
+
+        function backToMenu() {
+            document.getElementById('gameScreen').classList.remove('active');
+            document.getElementById('learningScreen').classList.remove('active');
+            document.getElementById('mainScreen').style.display = 'block';
+            renderPlanets();
+            updateScoreboard();
+        }
+
+        function createParticles(emoji, element) {
+            const rect = element.getBoundingClientRect();
+            
+            for (let i = 0; i < 5; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.textContent = emoji;
+                particle.style.left = rect.left + rect.width / 2 + 'px';
+                particle.style.top = rect.top + rect.height / 2 + 'px';
+                document.body.appendChild(particle);
+
+                setTimeout(() => particle.remove(), 3000);
+            }
+        }
+
+        function triggerRocket() {
+            const rocket = document.createElement('div');
+            rocket.className = 'rocket flying';
+            rocket.textContent = '🚀';
+            document.body.appendChild(rocket);
+
+            setTimeout(() => rocket.remove(), 3000);
+        }
+
+        // ==================== INITIALIZE ====================
+
+        function init() {
+            // Create stars background
+            const starsContainer = document.getElementById('starsContainer');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.width = Math.random() * 3 + 'px';
+                star.style.height = star.style.width;
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
