@@ -470,6 +470,21 @@
             font-family: 'Tajawal', sans-serif;
         }
 
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid var(--space-yellow);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         /* Planet Selection */
         .planet-selection {
             display: grid;
@@ -548,8 +563,8 @@
             color: var(--star-gold);
         }
 
-        /* Game Screen */
-        .game-screen {
+        /* Learning Screen - VISUAL INTERACTIVE */
+        .learning-screen {
             display: none;
             animation: fadeIn 0.5s ease-out;
         }
@@ -557,6 +572,264 @@
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
+        }
+
+        .learning-screen.active {
+            display: block;
+        }
+
+        .learning-header {
+            background: linear-gradient(135deg, rgba(107, 47, 216, 1), rgba(255, 30, 157, 1));
+            border-radius: 25px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .learning-title {
+            font-family: 'Fredoka', cursive;
+            font-size: 2.5rem;
+            color: var(--space-yellow);
+            margin-bottom: 10px;
+        }
+
+        .learning-title-en {
+            font-size: 1.2rem;
+            color: var(--space-blue);
+        }
+
+        /* Visual Groups Display */
+        .visual-container {
+            background: rgba(10, 14, 39, 0.8);
+            border: 3px solid var(--space-purple);
+            border-radius: 25px;
+            padding: 40px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .visual-title {
+            font-family: 'Fredoka', cursive;
+            font-size: 2rem;
+            color: var(--space-yellow);
+            margin-bottom: 30px;
+        }
+
+        .number-selector {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        .number-btn {
+            background: linear-gradient(135deg, var(--space-pink), var(--space-purple));
+            border: 3px solid var(--space-blue);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            font-size: 1.5rem;
+            font-weight: 900;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .number-btn:hover {
+            transform: scale(1.1);
+            border-color: var(--space-yellow);
+        }
+
+        .number-btn.active {
+            background: linear-gradient(135deg, var(--space-yellow), var(--space-orange));
+            border-color: var(--space-yellow);
+            transform: scale(1.15);
+        }
+
+        .groups-display {
+            margin: 30px 0;
+        }
+
+        .group-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .group {
+            background: rgba(255, 30, 157, 0.2);
+            border: 3px solid var(--space-pink);
+            border-radius: 20px;
+            padding: 20px;
+            min-width: 150px;
+        }
+
+        .group-label {
+            color: var(--space-blue);
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .circles-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .circle {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--space-yellow), var(--space-orange));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            color: var(--dark-space);
+            animation: popIn 0.3s ease-out;
+            box-shadow: 0 4px 15px rgba(255, 217, 61, 0.5);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .equation-display {
+            font-family: 'Fredoka', cursive;
+            font-size: 3rem;
+            color: var(--space-green);
+            margin: 30px 0;
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+        }
+
+        /* Interactive Table */
+        .multiplication-table {
+            background: rgba(10, 14, 39, 0.9);
+            border: 3px solid var(--space-blue);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .table-title {
+            font-size: 2rem;
+            color: var(--space-yellow);
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 900;
+        }
+
+        .table-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            margin: 10px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .table-row:hover {
+            background: rgba(255, 217, 61, 0.2);
+            transform: translateX(-5px);
+        }
+
+        .equation {
+            font-weight: 700;
+            color: white;
+        }
+
+        .result {
+            font-weight: 900;
+            color: var(--space-green);
+            font-size: 1.8rem;
+        }
+
+        /* Tricks Section */
+        .tricks-section {
+            background: rgba(255, 30, 157, 0.1);
+            border: 3px solid var(--space-pink);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+
+        .tricks-title {
+            font-size: 1.8rem;
+            color: var(--space-pink);
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 900;
+        }
+
+        .trick-item {
+            background: rgba(10, 14, 39, 0.6);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+            border-right: 5px solid var(--space-yellow);
+        }
+
+        .trick-text {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: white;
+        }
+
+        .btn-start-quiz {
+            background: linear-gradient(135deg, var(--space-green), var(--space-blue));
+            border: none;
+            color: white;
+            padding: 20px 50px;
+            font-size: 1.5rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 900;
+            display: block;
+            margin: 30px auto;
+            transition: all 0.3s;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        .btn-start-quiz:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 255, 136, 0.5);
+        }
+
+        .btn-back {
+            background: transparent;
+            border: 2px solid var(--space-blue);
+            color: var(--space-blue);
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: 700;
+            display: inline-block;
+            margin: 10px;
+            transition: all 0.3s;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        .btn-back:hover {
+            background: rgba(0, 194, 255, 0.2);
+            transform: translateY(-3px);
+        }
+
+        /* Game Screen */
+        .game-screen {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
         }
 
         .game-screen.active {
@@ -673,151 +946,6 @@
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.2); }
-        }
-
-        /* Learning Screen */
-        .learning-screen {
-            display: none;
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        .learning-screen.active {
-            display: block;
-        }
-
-        .learning-header {
-            background: linear-gradient(135deg, rgba(107, 47, 216, 1), rgba(255, 30, 157, 1));
-            border-radius: 25px;
-            padding: 30px;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .learning-title {
-            font-family: 'Fredoka', cursive;
-            font-size: 2.5rem;
-            color: var(--space-yellow);
-            margin-bottom: 10px;
-        }
-
-        .learning-title-en {
-            font-size: 1.2rem;
-            color: var(--space-blue);
-        }
-
-        .multiplication-table {
-            background: rgba(10, 14, 39, 0.9);
-            border: 3px solid var(--space-blue);
-            border-radius: 20px;
-            padding: 30px;
-            margin: 20px 0;
-        }
-
-        .table-title {
-            font-size: 2rem;
-            color: var(--space-yellow);
-            text-align: center;
-            margin-bottom: 20px;
-            font-weight: 900;
-        }
-
-        .table-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            margin: 10px 0;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .table-row:hover {
-            background: rgba(255, 217, 61, 0.2);
-            transform: translateX(-5px);
-        }
-
-        .equation {
-            font-weight: 700;
-            color: white;
-        }
-
-        .result {
-            font-weight: 900;
-            color: var(--space-green);
-            font-size: 1.8rem;
-        }
-
-        .tricks-section {
-            background: rgba(255, 30, 157, 0.1);
-            border: 3px solid var(--space-pink);
-            border-radius: 20px;
-            padding: 25px;
-            margin: 30px 0;
-        }
-
-        .tricks-title {
-            font-size: 1.8rem;
-            color: var(--space-pink);
-            text-align: center;
-            margin-bottom: 20px;
-            font-weight: 900;
-        }
-
-        .trick-item {
-            background: rgba(10, 14, 39, 0.6);
-            border-radius: 15px;
-            padding: 20px;
-            margin: 15px 0;
-            border-right: 5px solid var(--space-yellow);
-        }
-
-        .trick-text {
-            font-size: 1.2rem;
-            line-height: 1.8;
-            color: white;
-        }
-
-        .btn-start-quiz {
-            background: linear-gradient(135deg, var(--space-green), var(--space-blue));
-            border: none;
-            color: white;
-            padding: 20px 50px;
-            font-size: 1.5rem;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 900;
-            display: block;
-            margin: 30px auto;
-            transition: all 0.3s;
-            font-family: 'Tajawal', sans-serif;
-        }
-
-        .btn-start-quiz:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0, 255, 136, 0.5);
-        }
-
-        .btn-back {
-            background: transparent;
-            border: 2px solid var(--space-blue);
-            color: var(--space-blue);
-            padding: 15px 30px;
-            font-size: 1.2rem;
-            border-radius: 15px;
-            cursor: pointer;
-            font-weight: 700;
-            display: inline-block;
-            margin: 10px;
-            transition: all 0.3s;
-            font-family: 'Tajawal', sans-serif;
-        }
-
-        .btn-back:hover {
-            background: rgba(0, 194, 255, 0.2);
-            transform: translateY(-3px);
         }
 
         /* Celebration Modal */
@@ -949,22 +1077,17 @@
                 padding: 20px;
                 font-size: 1.8rem;
             }
-        }
 
-        /* Loading Spinner */
-        .loading-spinner {
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid var(--space-yellow);
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
+            .circle {
+                width: 35px;
+                height: 35px;
+            }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            .number-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
         }
     </style>
 </head>
@@ -1047,15 +1170,28 @@
             <div class="planet-selection" id="planetsContainer"></div>
         </div>
 
-        <!-- Learning Screen -->
+        <!-- Learning Screen with Visual Groups -->
         <div class="learning-screen" id="learningScreen">
             <div class="learning-header">
                 <h2 class="learning-title" id="learningPlanetName"></h2>
                 <p class="learning-title-en" id="learningPlanetNameEn"></p>
             </div>
 
+            <!-- Visual Interactive Section -->
+            <div class="visual-container">
+                <div class="visual-title">👁️ شاهد بعينك | Watch with Your Eyes</div>
+                
+                <div class="number-selector" id="numberSelector"></div>
+                
+                <div class="groups-display" id="groupsDisplay"></div>
+                
+                <div class="equation-display" id="equationDisplay"></div>
+            </div>
+
+            <!-- Multiplication Table -->
             <div class="multiplication-table" id="multiplicationTable"></div>
 
+            <!-- Tricks Section -->
             <div class="tricks-section" id="tricksSection"></div>
 
             <button class="btn-start-quiz" onclick="startQuiz()">
@@ -1115,18 +1251,7 @@
 
     <script>
         // ==================== FIREBASE CONFIGURATION ====================
-        // استبدل هذه القيم بقيم مشروعك من Firebase Console
-        // Replace these values with your Firebase project configuration
-        // const firebaseConfig = {
-        //     apiKey: "YOUR_API_KEY",
-        //     authDomain: "YOUR_AUTH_DOMAIN",
-        //     databaseURL: "YOUR_DATABASE_URL",
-        //     projectId: "YOUR_PROJECT_ID",
-        //     storageBucket: "YOUR_STORAGE_BUCKET",
-        //     messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-        //     appId: "YOUR_APP_ID"
-        // };
-        const firebaseConfig = {
+           const firebaseConfig = {
   apiKey: "AIzaSyDqMJOrcZDJQWgXHpTisaTBGserx_Ewp8Y",
   authDomain: "multiplication-adventure-eee71.firebaseapp.com",
   databaseURL: "https://multiplication-adventure-eee71-default-rtdb.firebaseio.com",
@@ -1369,6 +1494,11 @@
 
                 loading.style.display = 'none';
 
+                if (users.length === 0) {
+                    list.innerHTML = '<p style="text-align: center; color: var(--space-yellow); font-size: 1.5rem;">لا يوجد لاعبين بعد! كن الأول! 🏆<br>No players yet! Be the first!</p>';
+                    return;
+                }
+
                 users.forEach((user, index) => {
                     const rank = index + 1;
                     const isCurrentUser = currentUser && user.uid === currentUser.uid;
@@ -1408,7 +1538,7 @@
             } catch (error) {
                 console.error('Error loading leaderboard:', error);
                 loading.style.display = 'none';
-                list.innerHTML = '<p style="text-align: center; color: var(--space-pink);">حدث خطأ في تحميل لوحة المتصدرين | Error loading leaderboard</p>';
+                list.innerHTML = '<p style="text-align: center; color: var(--space-pink);">حدث خطأ في تحميل لوحة المتصدرين<br>Error loading leaderboard<br><br>الرجاء التحقق من:<br>- الاتصال بالإنترنت<br>- إعدادات Firebase</p>';
             }
         }
 
@@ -1456,9 +1586,27 @@
             showLearningContent(planet);
         }
 
+        // ==================== VISUAL LEARNING ====================
+
         function showLearningContent(planet) {
             document.getElementById('learningPlanetName').textContent = planet.nameAr;
             document.getElementById('learningPlanetNameEn').textContent = planet.nameEn;
+
+            // Create number selector buttons (1-10)
+            const numberSelector = document.getElementById('numberSelector');
+            numberSelector.innerHTML = '';
+            
+            for (let i = 10; i >= 1; i--) {
+                const btn = document.createElement('button');
+                btn.className = 'number-btn';
+                btn.textContent = i;
+                btn.onclick = () => showGroups(planet.number, i);
+                if (i === 1) btn.classList.add('active');
+                numberSelector.appendChild(btn);
+            }
+
+            // Show initial groups (1)
+            showGroups(planet.number, 1);
 
             // Generate multiplication table
             const tableContainer = document.getElementById('multiplicationTable');
@@ -1471,7 +1619,10 @@
                     <span class="equation">${planet.number} × ${i}</span>
                     <span class="result">= ${planet.number * i}</span>
                 `;
-                row.onclick = () => highlightRow(row);
+                row.onclick = () => {
+                    showGroups(planet.number, i);
+                    highlightRow(row);
+                };
                 tableContainer.appendChild(row);
             }
 
@@ -1479,15 +1630,98 @@
             showTricks(planet.number);
         }
 
+        function showGroups(tableNumber, multiplier) {
+            // Update active button
+            const buttons = document.querySelectorAll('.number-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+                if (parseInt(btn.textContent) === multiplier) {
+                    btn.classList.add('active');
+                }
+            });
+
+            const groupsDisplay = document.getElementById('groupsDisplay');
+            const equationDisplay = document.getElementById('equationDisplay');
+            
+            groupsDisplay.innerHTML = '';
+            
+            const groupContainer = document.createElement('div');
+            groupContainer.className = 'group-container';
+
+            // Create groups
+            for (let g = 1; g <= multiplier; g++) {
+                const group = document.createElement('div');
+                group.className = 'group';
+                
+                const label = document.createElement('div');
+                label.className = 'group-label';
+                label.textContent = `مجموعة ${g} | Group ${g}`;
+                group.appendChild(label);
+
+                const circlesContainer = document.createElement('div');
+                circlesContainer.className = 'circles-container';
+
+                // Create circles in each group
+                for (let c = 1; c <= tableNumber; c++) {
+                    setTimeout(() => {
+                        const circle = document.createElement('div');
+                        circle.className = 'circle';
+                        circlesContainer.appendChild(circle);
+                    }, (g - 1) * tableNumber * 50 + (c - 1) * 50);
+                }
+
+                group.appendChild(circlesContainer);
+                groupContainer.appendChild(group);
+            }
+
+            groupsDisplay.appendChild(groupContainer);
+
+            // Update equation
+            const result = tableNumber * multiplier;
+            setTimeout(() => {
+                equationDisplay.innerHTML = `${multiplier} مجموعات × ${tableNumber} = <span style="color: var(--space-yellow)">${result}</span>`;
+            }, multiplier * tableNumber * 50);
+        }
+
         function showTricks(tableNumber) {
             const tricksSection = document.getElementById('tricksSection');
             const tricks = {
-                2: ['الضرب في 2 = الجمع مع نفسه | Multiply by 2 = Add to itself', 'مثال: 5 × 2 = 5 + 5 = 10'],
-                3: ['العد بالقفز كل 3 أرقام | Skip count by 3', '3، 6، 9، 12، 15...'],
-                4: ['الضرب في 4 = الضرب في 2 مرتين | Multiply by 4 = Double twice', 'مثال: 7 × 4 = (7 × 2) × 2 = 14 × 2 = 28'],
-                5: ['كل الأجوبة تنتهي بـ 0 أو 5 | All answers end with 0 or 5'],
-                9: ['حاصل ضرب 9 في أي رقم = مجموع أرقامه 9 | Sum of digits = 9', 'مثال: 9 × 7 = 63 → 6 + 3 = 9'],
-                10: ['أضف صفر للرقم | Just add a zero!', 'مثال: 8 × 10 = 80']
+                2: [
+                    'الضرب في 2 = الجمع مع نفسه | Multiply by 2 = Add to itself',
+                    'مثال: 5 × 2 = 5 + 5 = 10 | Example: 5 × 2 = 5 + 5 = 10'
+                ],
+                3: [
+                    'العد بالقفز كل 3 أرقام | Skip count by 3',
+                    '3، 6، 9، 12، 15، 18، 21، 24، 27، 30'
+                ],
+                4: [
+                    'الضرب في 4 = الضرب في 2 مرتين | Multiply by 4 = Double twice',
+                    'مثال: 7 × 4 = (7 × 2) × 2 = 14 × 2 = 28'
+                ],
+                5: [
+                    'كل الأجوبة تنتهي بـ 0 أو 5 | All answers end with 0 or 5',
+                    '5، 10، 15، 20، 25، 30، 35، 40، 45، 50'
+                ],
+                6: [
+                    'الضرب في 6 = (الضرب في 3) × 2 | Multiply by 6 = (Multiply by 3) × 2',
+                    'مثال: 8 × 6 = (8 × 3) × 2 = 24 × 2 = 48'
+                ],
+                7: [
+                    'لا توجد حيلة سهلة، لكن التكرار يساعد! | No easy trick, but practice helps!',
+                    'جرب كتابة الجدول 5 مرات | Try writing the table 5 times'
+                ],
+                8: [
+                    'الضرب في 8 = الضرب في 2 ثلاث مرات | Multiply by 8 = Double 3 times',
+                    'مثال: 5 × 8 = 5 × 2 × 2 × 2 = 10 × 2 × 2 = 20 × 2 = 40'
+                ],
+                9: [
+                    'حاصل ضرب 9 في أي رقم = مجموع أرقامه 9 | Sum of digits = 9',
+                    'مثال: 9 × 7 = 63 → 6 + 3 = 9 ✨'
+                ],
+                10: [
+                    'أضف صفر للرقم! | Just add a zero!',
+                    'مثال: 8 × 10 = 80 | Example: 8 × 10 = 80'
+                ]
             };
 
             const tricksList = tricks[tableNumber] || ['تمرن كثيراً وستتقنه! | Practice makes perfect!'];
