@@ -66,26 +66,6 @@
                 opacity: 0.6;
             }
         }
-/* ===== Mazen Branding (UNIQUE - STATIC FOOTER) ===== */
-.mazen-brand-footer {
-    margin-top: 40px;
-    padding: 16px 10px;
-    background: rgba(0, 0, 0, 0.6);
-    border-top: 1px solid rgba(255,255,255,0.2);
-    font-size: 14px;
-    text-align: center;
-    line-height: 1.7;
-}
-
-.mazen-brand-footer a {
-    color: #00e5ff;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-.mazen-brand-footer a:hover {
-    text-decoration: underline;
-}
 
         /* ==================== LOGIN SCREEN ==================== */
         .login-screen {
@@ -654,6 +634,96 @@
             white-space: pre-line;
         }
 
+        .play-song-btn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, #FF6B9D, #FFA502);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 800;
+            cursor: pointer;
+            font-family: 'Changa', sans-serif;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(255, 107, 157, 0.4);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .play-song-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 107, 157, 0.6);
+        }
+
+        .play-song-btn.playing {
+            background: linear-gradient(135deg, #26de81, #20bf6b);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .lyrics-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .lyrics-container.show {
+            display: block;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .lyrics-verse {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border-right: 4px solid var(--accent);
+        }
+
+        .lyrics-verse-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+
+        .lyrics-line {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 5px;
+        }
+
+        .lyrics-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .lyrics-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .lyrics-container::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 10px;
+        }
+
         .interactive-box {
             background: linear-gradient(135deg, rgba(38, 222, 129, 0.2), rgba(75, 123, 236, 0.2));
             border: 3px dashed rgba(255, 255, 255, 0.5);
@@ -928,6 +998,29 @@
             font-size: 1rem;
         }
 
+ /* ===== Mazen Branding (UNIQUE - STATIC FOOTER) ===== */
+.mazen-brand-footer {
+    margin-top: 40px;
+    padding: 16px 10px;
+    background: rgba(0, 0, 0, 0.6);
+    border-top: 1px solid rgba(255,255,255,0.2);
+    font-size: 14px;
+    text-align: center;
+    line-height: 1.7;
+}
+
+.mazen-brand-footer a {
+    color: #00e5ff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.mazen-brand-footer a:hover {
+    text-decoration: underline;
+}
+
+
+
         /* ==================== RESPONSIVE ==================== */
         @media (max-width: 768px) {
             .login-container {
@@ -989,8 +1082,7 @@
         }
     </style>
 </head>
-
-    <!-- ===== Mazen Unique Branding ===== -->
+<!-- ===== Mazen Unique Branding ===== -->
 <div class="mazen-brand-footer">
     📘 <strong>Math with Mazen</strong><br>
     👨‍🏫 Created by Mazen<br>
@@ -1646,7 +1738,13 @@
                     <h2 class="section-title">🎵 الأغنية | The Song</h2>
                     <div class="song-box">
                         <div class="song-title">🎤 غني معنا!</div>
-                        <div class="song-lyrics">${data.song}</div>
+                        <button class="play-song-btn" onclick="playSong(${num}, this)">
+                            <span>▶️</span>
+                            <span>شغل الأغنية | Play Song</span>
+                        </button>
+                        <div class="lyrics-container" id="lyrics-${num}">
+                            ${formatLyrics(num)}
+                        </div>
                     </div>
                 </div>
 
@@ -1987,6 +2085,295 @@
                     backgroundMusic.play().catch(e => console.log('Music error'));
                 }
             }
+        }
+
+        // ==================== SONG PLAYER ====================
+        let currentSongAudio = null;
+
+        function playSong(tableNum, btn) {
+            const songUrls = {
+                1: 'table-1.mp3',
+                2: 'table-2.mp3',
+                3: 'table-3.mp3',
+                4: 'table-4.mp3',
+                5: 'table-5.mp3',
+                6: 'table-6.mp3',
+                7: 'table-7.mp3',
+                8: 'table-8.mp3',
+                9: 'table-9.mp3',
+                10: 'table-10.mp3'
+            };
+
+            const lyricsContainer = document.getElementById(`lyrics-${tableNum}`);
+            
+            // Toggle lyrics display
+            if (lyricsContainer.classList.contains('show')) {
+                lyricsContainer.classList.remove('show');
+                if (currentSongAudio) {
+                    currentSongAudio.pause();
+                    currentSongAudio = null;
+                    btn.classList.remove('playing');
+                    btn.innerHTML = '<span>▶️</span><span>شغل الأغنية | Play Song</span>';
+                }
+                return;
+            }
+
+            // Show lyrics
+            lyricsContainer.classList.add('show');
+            
+            // Play song
+            if (currentSongAudio) {
+                currentSongAudio.pause();
+            }
+            
+            currentSongAudio = new Audio(songUrls[tableNum]);
+            currentSongAudio.play().catch(e => {
+                console.log('Song play prevented:', e);
+                alert('ممكن تضغط مرة تانية لتشغيل الأغنية');
+            });
+            
+            btn.classList.add('playing');
+            btn.innerHTML = '<span>⏸️</span><span>وقف الأغنية | Pause Song</span>';
+            
+            currentSongAudio.onended = () => {
+                btn.classList.remove('playing');
+                btn.innerHTML = '<span>▶️</span><span>شغل الأغنية | Play Song</span>';
+            };
+        }
+
+        function formatLyrics(tableNum) {
+            const allLyrics = {
+                1: [
+                    { title: 'Verse 1', lines: [
+                        'أنا واحد الساحر المميز',
+                        'واحد × واحد = واحد مرتاح',
+                        'اثنين × واحد = اثنين يا جماعة',
+                        'ثلاثة × واحد = ثلاثة بسيطة',
+                        'الرقم يبقى زي ما هو',
+                        'ما يتغيرش أبداً يا حلو!'
+                    ]}
+                ],
+                2: [
+                    { title: 'Verse 1', lines: [
+                        'أرنوب لابس جزمة.. بتعمل تيك تيك',
+                        'أي حاجة بيشوفها.. بتبقى دوبل وشيك',
+                        'ماشي لوحده شاف شجرة.. خبطها بقوا اتنين',
+                        'واحد في اتنين باتنين.. حلوين وطعمين'
+                    ]},
+                    { title: 'Chorus', lines: [
+                        'One times Two is Two (2×1=2)',
+                        'Two times Two is Four (2×2=4)',
+                        'يلا نزود أكتر (More and More)',
+                        'تلاتة في اتنين بستة (That\'s Six!)',
+                        'أربعة في اتنين بتمانية (That\'s Eight!)',
+                        'خمسة في اتنين بعشرة (Ten is great!)'
+                    ]},
+                    { title: 'Verse 2', lines: [
+                        'Rabbit has magic shoes, walking down the street',
+                        'Every step he takes, the numbers double and meet!',
+                        'Six times Two is Twelve',
+                        'Seven times Two Fourteen',
+                        'Eight times Two Sixteen.. The best you\'ve ever seen!',
+                        'تسعة في اتنين تمنتاشر.. عشرة في اتنين عشرين!'
+                    ]}
+                ],
+                3: [
+                    { title: 'Verse 1', lines: [
+                        'إشارة مرور واقفة.. فيها تلات عيون',
+                        'كل عربية تعدي.. تدفع تلاتة وتخون',
+                        'عربية واحدة عدت.. دفعت تلاتة كاش',
+                        'عربيتين يا صاحبي.. ستة وما ببلاش'
+                    ]},
+                    { title: 'Chorus', lines: [
+                        'Three times One is Three (3×1=3)',
+                        'Three times Two is Six (3×2=6)',
+                        'تلات عربيات.. بقوا تسعة في الزحمة (That\'s Nine!)',
+                        'أربع عربيات.. اتناشر دي اللحمة (That\'s Twelve!)',
+                        'خمسة في تلاتة خمستاشر.. كمل يا بطل (Fifteen!)'
+                    ]},
+                    { title: 'Verse 2', lines: [
+                        'Traffic light is blinkin\', asking for the fee',
+                        'Every car pays three coins, listen to me!',
+                        'Six cars paying Eighteen (6×3=18)',
+                        'Seven cars paying Twenty-One (7×3=21)',
+                        'Eight cars Twenty-Four.. we having fun!',
+                        'تسعة في تلاتة سبعة وعشرين.. عشرة في تلاتة تلاتين!'
+                    ]}
+                ],
+                4: [
+                    { title: 'Verse 1', lines: [
+                        'عربيتي الجيب قوية.. بتمشي بأربع عجلات',
+                        'بتسافر كل الدنيا.. وتعدي المحطات',
+                        'مشوار واحد رحنا.. بأربع عجلات جداد',
+                        'مشوارين يا كابتن.. بقوا تمانية يا سداد'
+                    ]},
+                    { title: 'Chorus', lines: [
+                        'Four times One is Four (4×1=4)',
+                        'Four times Two is Eight (4×2=8)',
+                        'تلاتة في أربعة.. اتناشر يا واد يا تيت (Twelve!)',
+                        'أربعة في أربعة.. ستاشر يا عفريت (Sixteen!)',
+                        'خمسة في أربعة.. عشرين ع السلم (Twenty!)'
+                    ]},
+                    { title: 'Verse 2', lines: [
+                        'My Jeep is super strong, four wheels on the ground',
+                        'Driving through the numbers, making a loud sound',
+                        'Six times Four is Twenty-Four',
+                        'Seven times Four Twenty-Eight',
+                        'Eight times Four Thirty-Two.. Don\'t be late!',
+                        'تسعة في أربعة ستة وتلاتين.. عشرة في أربعة أربعين!'
+                    ]}
+                ],
+                5: [
+                    { title: 'Verse 1', lines: [
+                        'كابتن خمسة وصل.. ارفع ايدك فوق',
+                        'بيسلم ع الحبايب.. وكله يدوق الشوق',
+                        'سلم على واحد.. اداله خمسة طاقة',
+                        'سلم على اتنين.. بقوا عشرة بشياكة'
+                    ]},
+                    { title: 'Chorus', lines: [
+                        'Five times One is Five (5×1=5)',
+                        'Five times Two is Ten (5×2=10)',
+                        'تلاتة في خمسة خمستاشر.. يلا كمان (Fifteen!)',
+                        'أربعة في خمسة عشرين.. ركز يا مان (Twenty!)',
+                        'خمسة في خمسة.. خمسة وعشرين (Twenty-Five!)'
+                    ]},
+                    { title: 'Verse 2', lines: [
+                        'Captain Five is here, giving High-Fives all day',
+                        'Every touch adds five, hip-hip-hooray!',
+                        'Six times Five is Thirty (6×5=30)',
+                        'Seven times Five Thirty-Five (7×5=35)',
+                        'Eight times Five Forty.. We are alive!',
+                        'تسعة في خمسة خمسة وأربعين.. عشرة في خمسة خمسين!'
+                    ]}
+                ],
+                6: [
+                    { title: 'Verse 1', lines: [
+                        'النحلة ستة بتلف.. وتعمل شكل سداسي',
+                        'بست رجلين بتمشي.. وبتعبي الكراسي',
+                        'راحت لوردة واحدة.. ستة نقط عسل',
+                        'راحت لوردتين.. اتناشر يا بطل'
+                    ]},
+                    { title: 'Chorus', lines: [
+                        'Six times One is Six (6×1=6)',
+                        'Six times Two is Twelve (6×2=12)',
+                        'تلاتة في ستة.. تمنتاشر يا نحلة (Eighteen!)',
+                        'أربعة في ستة.. أربعة وعشرين أحلى (Twenty-Four!)',
+                        'خمسة في ستة.. تلاتين في السلة (Thirty!)'
+                    ]},
+                    { title: 'Verse 2', lines: [
+                        'Busy Bee is flying, with six little legs',
+                        'Collecting all the honey, filling up the kegs',
+                        'Six times Six Thirty-Six (6×6=36)',
+                        'Seven times Six Forty-Two (7×6=42)',
+                        'Eight times Six Forty-Eight.. Look at you!',
+                        'تسعة في ستة أربعة وخمسين.. عشرة في ستة ستين!'
+                    ]}
+                ],
+                7: [
+                    { title: 'Verse 1', lines: [
+                        'الأسبوع سبع أيام.. والسنفور بيعد',
+                        'بيخلص كل شغله.. في الميعاد والجد',
+                        'أسبوع واحد عدى.. سبع أيام فاتوا',
+                        'أسبوعين يا شاطر.. أربعتاشر في حياته'
+                    ]},
+                    { title: 'Chorus', lines: [
+                        'Seven times One is Seven (7×1=7)',
+                        'Seven times Two is Fourteen (7×2=14)',
+                        'تلاتة في سبعة.. واحد وعشرين (Twenty-One!)',
+                        'أربعة في سبعة.. تمانية وعشرين (Twenty-Eight!)',
+                        'خمسة في سبعة.. خمسة وتلاتين (Thirty-Five!)'
+                    ]},
+                    { title: 'Bridge', lines: [
+                        'Weeks are flying by!',
+                        'ستة في سبعة.. اتنين وأربعين (Forty-Two!)',
+                        'سبعة في سبعة.. تسعة وأربعين (Forty-Nine!)',
+                        'تمانية في سبعة.. ستة وخمسين (Fifty-Six!)',
+                        'تسعة في سبعة تلاتة وستين.. عشرة في سبعة سبعين!'
+                    ]}
+                ],
+                8: [
+                    { title: 'Verse 1', lines: [
+                        'الأخطبوط أوكا.. بتمان ايدين بيلعب',
+                        'بيلم كنوز البحر.. وعمره ما بيتعب',
+                        'مسك صندوق واحد.. بتمان دراعات ماسك',
+                        'مسك صندوقين.. ستاشر يا ناسك'
+                    ]},
+                    { title: 'Chorus', lines: [
+                        'Eight times One is Eight (8×1=8)',
+                        'Eight times Two is Sixteen (8×2=16)',
+                        'تلاتة في تمانية.. أربعة وعشرين (Twenty-Four!)',
+                        'أربعة في تمانية.. اتنين وتلاتين (Thirty-Two!)',
+                        'خمسة في تمانية.. أربعين حوت متين (Forty!)'
+                    ]},
+                    { title: 'Verse 2', lines: [
+                        'Oca has eight arms, grabbing everything he sees',
+                        'Swimming in the ocean, flexible as a breeze',
+                        'Six times Eight Forty-Eight (6×8=48)',
+                        'Seven times Eight Fifty-Six (7×8=56)',
+                        'Eight times Eight Sixty-Four.. Magic tricks!',
+                        'تسعة في تمانية اتنين وسبعين.. عشرة في تمانية وتمانين!'
+                    ]}
+                ],
+                9: [
+                    { title: 'Verse 1', lines: [
+                        'يا جدول تسعة يا سحري.. ده لعبتك لعبة',
+                        'بتنقص واحد دايماً.. وتزود عشرة صعبة',
+                        'واحد في تسعة بتسعة.. واقفة لوحدها',
+                        'اتنين في تسعة تمنتاشر.. السلم شدها'
+                    ]},
+                    { title: 'Chorus', lines: [
+                        'Nine times One is Nine (9×1=9)',
+                        'Nine times Two is Eighteen (9×2=18)',
+                        'تلاتة في تسعة.. سبعة وعشرين (Twenty-Seven!)',
+                        'أربعة في تسعة.. ستة وتلاتين (Thirty-Six!)',
+                        'خمسة في تسعة.. خمسة وأربعين (Forty-Five!)'
+                    ]},
+                    { title: 'Verse 2', lines: [
+                        'Climb the magic ladder, one step at a time',
+                        'Every step you take, helps you solve the rhyme',
+                        'Six times Nine Fifty-Four (6×9=54)',
+                        'Seven times Nine Sixty-Three (7×9=63)',
+                        'Eight times Nine Seventy-Two.. Look at me!',
+                        'تسعة في تسعة واحد وتمانين.. عشرة في تسعة تسعين!'
+                    ]}
+                ],
+                10: [
+                    { title: 'Verse 1', lines: [
+                        'أنا الملك عشرة.. كريم وبدي هدايا',
+                        'أي رقم يجي عندي.. ياخد صفر ويبقى معايا',
+                        'الواحد خد صفر.. بقى عشرة في الحال',
+                        'الاتنين خدت صفر.. عشرين يا عيال'
+                    ]},
+                    { title: 'Chorus', lines: [
+                        'Ten times One is Ten (10×1=10)',
+                        'Ten times Two is Twenty (10×2=20)',
+                        'تلاتة في عشرة تلاتين.. (Thirty!)',
+                        'أربعة في عشرة أربعين.. (Forty!)',
+                        'خمسة في عشرة خمسين.. (Fifty!)'
+                    ]},
+                    { title: 'Verse 2', lines: [
+                        'I am King Ten, giving zeros to the bold',
+                        'Turning little numbers into stories to be told',
+                        'Six is Sixty (60).. Seven is Seventy (70)',
+                        'Eight is Eighty (80).. Nine is Ninety (90)',
+                        'Ten times Ten is One Hundred! (100!)'
+                    ]}
+                ]
+            };
+
+            const lyrics = allLyrics[tableNum] || [];
+            let html = '';
+            
+            lyrics.forEach(verse => {
+                html += `<div class="lyrics-verse">`;
+                html += `<div class="lyrics-verse-title">${verse.title}</div>`;
+                verse.lines.forEach(line => {
+                    html += `<div class="lyrics-line">${line}</div>`;
+                });
+                html += `</div>`;
+            });
+            
+            return html;
         }
 
         // ==================== INIT ====================
